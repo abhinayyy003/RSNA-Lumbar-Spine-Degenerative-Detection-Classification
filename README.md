@@ -28,3 +28,8 @@ Due to the size of the dataset (>7GB), the data itself is not included in this r
 
 1. Go to the <a href="https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification" target="_blank">RSNA 2024 Lumbar Spine Degenerative Classification</a> competition page on Kaggle.
 2. Download all the files and folder on the website.
+
+## FRONTEND
+![1](https://github.com/user-attachments/assets/c6663804-65f6-46b2-8c5f-4180c73f02db)
+![2](https://github.com/user-attachments/assets/eea9683f-4b0f-4916-b380-b4d4b5114bbf)
+![3](https://github.com/user-attachments/assets/f7d590b1-ca50-4510-a826-7a070c7821ec)
