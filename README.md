@@ -26,5 +26,5 @@ Due to the size of the dataset (>7GB), the data itself is not included in this r
 
 ### How to Download the Dataset
 
-1. Go to the <a href="https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification">RSNA 2024 Lumbar Spine Degenerative Classification</a> competition page on Kaggle.
+1. Go to the <a href="https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification" target="_blank">RSNA 2024 Lumbar Spine Degenerative Classification</a> competition page on Kaggle.
 2. Download all the files and folder on the website.
