@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumbar Spine Classification</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Lumbar Spine Classification</h1>
+
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Expected Study Structure:</h2>
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <pre class="text-sm">
+Study_ID/
+├── 2828203845/    (Sagittal T1)
+├── 3481971518/    (Axial T2)
+└── 3844393089/    (Sagittal T2/STIR)
+                    </pre>
+                </div>
+            </div>
+
+            <form id="uploadForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Study Folder</label>
+                    <input type="file" name="study_folder" webkitdirectory directory multiple
+                           class="mt-1 block w-full" required>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Select the study folder containing the three series subfolders.
+                    </p>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Analyze Study
+                </button>
+            </form>
+
+            <div id="results" class="mt-8 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Results</h2>
+                    <button id="downloadBtn" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                        Download Report
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Study ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Series Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Normal/Mild</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moderate</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Severe</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = e.target.querySelector('input[type="file"]');
+
+            for (const file of fileInput.files) {
+                formData.append('study_folder', file, file.webkitRelativePath);
+            }
+
+            const resultsDiv = document.getElementById('results');
+            const resultsBody = document.getElementById('resultsBody');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                resultsBody.innerHTML = '';
+
+                data.results.forEach(result => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">${result.study_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${result.series_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${result.condition}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${result.level}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${result.normal_mild}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${result.moderate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${result.severe}</td>
+                    `;
+                    resultsBody.appendChild(row);
+                });
+
+                resultsDiv.classList.remove('hidden');
+
+                downloadBtn.onclick = () => {
+                    window.location.href = '/download_submission';
+                };
+
+            } catch (error) {
+                alert('Error processing study folder. Please try again.');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
